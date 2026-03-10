@@ -1,0 +1,822 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="축산물 쇼핑몰 UI/UX 디자인 리뉴얼 및 다채널 상세페이지 제작 — 프로젝트 제안서" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/variable/woff2/SUIT-Variable.css" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['SUIT Variable', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace']
+          },
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              600: '#0284c7',
+              700: '#0369a1'
+            }
+          },
+          boxShadow: {
+            soft: '0 10px 30px -18px rgba(15, 23, 42, 0.35)'
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    :root { color-scheme: light; font-size: 16px; /* 12pt minimum base */ }
+    body {
+      font-family: 'SUIT Variable', sans-serif;
+      font-size: 1rem; /* 16px = 12pt */
+      background-image:
+        radial-gradient(circle at 12% 18%, rgba(14, 165, 233, 0.08), transparent 42%),
+        radial-gradient(circle at 88% 82%, rgba(2, 132, 199, 0.06), transparent 48%);
+    }
+
+    /* ─── doc-content typography (from harmony-link-be) ─── */
+    .doc-content h1, .doc-content h2, .doc-content h3, .doc-content h4 {
+      color: rgb(15 23 42); font-weight: 700; letter-spacing: -0.01em;
+      line-height: 1.3; margin-top: 1.6em; margin-bottom: 0.7em;
+    }
+    .doc-content h1 { font-size: 2rem; margin-top: 0.2em; }
+    .doc-content h2 { font-size: 1.4rem; }
+    .doc-content h3 { font-size: 1.15rem; }
+    .doc-content p, .doc-content li {
+      color: rgb(51 65 85); line-height: 1.8; font-size: 1rem;
+    }
+    .doc-content p, .doc-content ul, .doc-content ol,
+    .doc-content table, .doc-content pre, .doc-content blockquote {
+      margin-bottom: 1rem;
+    }
+    .doc-content ul, .doc-content ol { padding-left: 1.2rem; }
+    .doc-content ul { list-style: disc; }
+    .doc-content ol { list-style: decimal; }
+    .doc-content table {
+      width: 100%; border-collapse: collapse;
+      border: 1px solid rgb(226 232 240); border-radius: 0.75rem;
+      overflow: hidden; font-size: 1rem;
+    }
+    .doc-content th, .doc-content td {
+      border: 1px solid rgb(226 232 240); padding: 0.7rem 0.8rem;
+      text-align: left; vertical-align: top;
+    }
+    .doc-content th {
+      background: rgb(248 250 252); color: rgb(30 41 59); font-weight: 600;
+    }
+    .doc-content pre, .doc-content code {
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+    }
+    .doc-content pre {
+      background: rgb(15 23 42); color: rgb(226 232 240);
+      padding: 1rem; border-radius: 0.75rem; overflow-x: auto;
+      font-size: 1rem; line-height: 1.65;
+    }
+    .doc-content p code, .doc-content li code,
+    .doc-content td code, .doc-content th code {
+      background: rgb(241 245 249); color: rgb(15 23 42);
+      border: 1px solid rgb(226 232 240); border-radius: 0.4rem;
+      padding: 0.08rem 0.4rem; font-size: 1em;
+    }
+    .doc-content blockquote {
+      border-left: 3px solid rgb(14 165 233); padding-left: 0.85rem;
+      color: rgb(71 85 105); background: rgb(240 249 255);
+      border-radius: 0.5rem; padding-top: 0.55rem; padding-bottom: 0.55rem;
+    }
+
+    /* ─── 12pt (16px) minimum font size ─── */
+    .text-xs { font-size: 1rem !important; }
+
+    /* ─── Timeline ─── */
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before {
+      content: ''; position: absolute; left: 0.6rem; top: 0.25rem; bottom: 0.25rem;
+      width: 2px; background: rgb(186 230 253);
+    }
+    .timeline-item { position: relative; margin-bottom: 1.75rem; }
+    .timeline-item::before {
+      content: ''; position: absolute; left: -1.65rem; top: 0.35rem;
+      width: 0.75rem; height: 0.75rem; border-radius: 50%;
+      background: rgb(2 132 199); border: 3px solid rgb(224 242 254);
+    }
+
+    /* ─── Page sections ─── */
+    .page-section { display: none; }
+    .page-section.active { display: block; }
+
+    /* ─── Mobile sidebar toggle ─── */
+    #sidebar-backdrop { display: none; }
+    #sidebar-backdrop.open { display: block; }
+    @media (max-width: 1023px) {
+      #sidebar { transform: translateX(-100%); transition: transform 0.2s ease; position: fixed; top: 0; left: 0; z-index: 40; height: 100vh; width: 80vw; max-width: 320px; }
+      #sidebar.open { transform: translateX(0); }
+    }
+  </style>
+  <title>축산물 쇼핑몰 UI/UX 디자인 리뉴얼 및 다채널 상세페이지 제작 — 프로젝트 제안서</title>
+</head>
+<body class="text-slate-800 font-sans antialiased">
+  <div class="mx-auto max-w-7xl px-4 py-6 md:px-8 md:py-10">
+
+    <!-- ─── Header ─── -->
+    <header class="mb-6 rounded-2xl border border-slate-200/70 bg-white/85 px-5 py-3 shadow-soft backdrop-blur">
+      <div class="flex flex-wrap items-center gap-3">
+        <button id="sidebar-toggle" class="lg:hidden inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1 text-sm font-medium text-slate-700 hover:border-sky-300 hover:text-sky-700">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          메뉴
+        </button>
+        <a href="#home" class="inline-flex items-center shrink-0">
+          <img src="blueverse_logo_h.png" alt="Blue Verse" class="h-6" />
+        </a>
+        <div class="hidden sm:block ml-auto text-right">
+          <p class="text-sm font-semibold tracking-[0.04em] text-sky-700/90">축산물 쇼핑몰 UI/UX 디자인 리뉴얼 및 다채널 상세페이지 제작</p>
+          <p class="text-xs text-slate-400">프로젝트 제안서</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+
+      <!-- ─── Sidebar ─── -->
+      <div id="sidebar-backdrop" class="fixed inset-0 bg-black/30 z-30 lg:hidden" onclick="closeSidebar()"></div>
+      <aside id="sidebar" class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 shadow-soft backdrop-blur lg:sticky lg:top-6 lg:h-[calc(100vh-4rem)] lg:overflow-auto">
+        <nav id="nav" class="space-y-1">
+          <a href="#home" data-page="home" class="nav-link block rounded-xl border px-3 py-2 text-sm border-sky-200 bg-sky-50 font-medium text-sky-700">홈</a>
+          <div class="my-3 border-t border-slate-200"></div>
+          <p class="mb-2 mt-1 px-1 text-sm font-semibold tracking-[0.14em] text-slate-400">제안서</p>
+          <a href="#overview" data-page="overview" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">프로젝트 소개</a>
+          <a href="#estimate" data-page="estimate" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">견적서</a>
+          <a href="#manday" data-page="manday" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">공수계산서</a>
+          <a href="#prd" data-page="prd" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">PRD</a>
+          <div class="my-3 border-t border-slate-200"></div>
+          <p class="mb-2 mt-1 px-1 text-sm font-semibold tracking-[0.14em] text-slate-400">일정 & 경험</p>
+          <a href="#timeline" data-page="timeline" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">일정 제안</a>
+          <a href="#portfolio" data-page="portfolio" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">유사 프로젝트 경험</a>
+        </nav>
+      </aside>
+
+      <!-- ─── Main Content ─── -->
+      <main class="min-w-0">
+
+        <!-- ═══════════════════════════════════════════════ -->
+        <!-- PAGE: Home (Landing)                           -->
+        <!-- ═══════════════════════════════════════════════ -->
+        <div id="page-home" class="page-section active space-y-6">
+          <!-- Hero -->
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-6 shadow-soft backdrop-blur md:p-8">
+            <p class="mb-2 text-xs font-semibold tracking-[0.2em] text-sky-700/80">프로젝트 제안서</p>
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">축산물 쇼핑몰 UI/UX 디자인 리뉴얼 및 다채널 상세페이지 제작</h1>
+            <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-600 md:text-base">가천포크 쇼핑몰의 브랜드 정체성을 살린 프리미엄 UI/UX 디자인 리뉴얼과 약 20종 축산물 상품의 다채널(쿠팡, 네이버 스마트스토어 등) 상세페이지 제작을 제안합니다. 현행 사이트 분석 기반의 체계적 디자인 전략으로 신뢰감 있는 쇼핑 경험을 구축합니다.</p>
+            <div class="mt-4 flex flex-wrap items-center gap-2">
+              <span class="inline-flex rounded-full border border-sky-200 bg-sky-100 px-2.5 py-1 text-sm font-semibold tracking-[0.12em] text-sky-700">720만원 (VAT 별도)</span>
+              <span class="inline-flex rounded-full border border-sky-200 bg-sky-100 px-2.5 py-1 text-sm font-semibold tracking-[0.12em] text-sky-700">60일</span>
+              <span class="inline-flex rounded-full border border-amber-200 bg-amber-100 px-2.5 py-1 text-sm font-semibold tracking-[0.12em] text-amber-700">디자인 · 커머스/쇼핑몰</span>
+              <a href="https://www.wishket.com/project/153461/" target="_blank" rel="noopener noreferrer"
+                 class="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-sm font-medium text-slate-500 transition hover:border-sky-300 hover:text-sky-700">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                원본 공고
+              </a>
+              <a href="https://www.wishket.com/partners/p/blueverse1/portfolio/" target="_blank" rel="noopener noreferrer"
+                 class="inline-flex items-center gap-1 rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1 text-sm font-medium text-sky-700 transition hover:border-sky-400 hover:bg-sky-100">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                위시켓 포트폴리오
+              </a>
+            </div>
+          </div>
+
+          <!-- Summary cards grid -->
+          <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <a href="#overview" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">소개</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">프로젝트 소개</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">현행 사이트 분석, 핵심 요구사항, 디자인 전략 제안</p>
+            </a>
+            <a href="#estimate" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">비용</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">견적서</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">항목별 디자인 비용 산출 근거 및 상세 견적</p>
+            </a>
+            <a href="#manday" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">공수</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">공수계산서</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">디자인 작업별 공수(man-day) 산출 내역</p>
+            </a>
+            <a href="#prd" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-amber-100 text-amber-700 border-amber-200">기획</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">PRD</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">디자인 요구사항 정의, 페이지 구조, 브랜드 가이드</p>
+            </a>
+            <a href="#timeline" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-amber-100 text-amber-700 border-amber-200">일정</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">일정 제안</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">단계별 마일스톤 및 산출물 일정표</p>
+            </a>
+            <a href="#portfolio" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-amber-100 text-amber-700 border-amber-200">경험</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">유사 프로젝트 경험</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">UI/UX 리뉴얼 및 대규모 디자인 수행 경험</p>
+            </a>
+          </div>
+
+          <!-- Quick stats -->
+          <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">28</p>
+              <p class="mt-1 text-xs text-slate-500">카테고리 페이지</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">~20종</p>
+              <p class="mt-1 text-xs text-slate-500">상품 상세페이지</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">60일</p>
+              <p class="mt-1 text-xs text-slate-500">작업 기간</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">49 M/D</p>
+              <p class="mt-1 text-xs text-slate-500">총 공수</p>
+            </div>
+          </div>
+
+          <!-- CTA -->
+          <div class="rounded-2xl border border-sky-200/70 bg-gradient-to-br from-sky-50 to-brand-50 p-6 text-center shadow-soft md:p-10">
+            <h2 class="text-xl font-bold tracking-tight text-slate-900 md:text-2xl">함께 만들어 가겠습니다</h2>
+            <p class="mx-auto mt-3 max-w-lg text-sm leading-7 text-slate-600">각 메뉴를 클릭하시면 상세 내용을 확인하실 수 있습니다.</p>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════ -->
+        <!-- PAGE: 프로젝트 소개 (Overview)                  -->
+        <!-- ═══════════════════════════════════════════════ -->
+        <div id="page-overview" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>프로젝트 소개</h1>
+              <blockquote>가천포크 쇼핑몰의 브랜드 정체성을 살린 프리미엄 UI/UX 디자인 리뉴얼과 약 20종 축산물 상품의 다채널 상세페이지 제작을 제안합니다.</blockquote>
+
+              <h2>프로젝트 개요</h2>
+              <table>
+                <tr><th>항목</th><th>내용</th></tr>
+                <tr><td>프로젝트명</td><td><a href="https://www.wishket.com/project/153461/" target="_blank" rel="noopener noreferrer" class="text-sky-700 underline decoration-sky-300 hover:decoration-sky-500">축산물 쇼핑몰 UI/UX 디자인 리뉴얼 및 다채널 상세페이지 제작</a></td></tr>
+                <tr><td>카테고리</td><td>디자인 · 커머스/쇼핑몰</td></tr>
+                <tr><td>제안 금액</td><td>720만원 (VAT 별도)</td></tr>
+                <tr><td>제안 기간</td><td>60일</td></tr>
+                <tr><td>핵심 도구</td><td>Figma, Photoshop, Illustrator</td></tr>
+              </table>
+
+              <h2>현행 사이트 분석</h2>
+              <ul>
+                <li><strong>현행 도메인</strong>: gachunpork1.co.kr — Apache 기반 정적 HTML 사이트</li>
+                <li><strong>카테고리 구조</strong>: 한우(11개), 한돈(10개), 선물세트(7개) = 총 28개 카테고리</li>
+                <li><strong>상품 수</strong>: 약 20여 종 내외</li>
+                <li><strong>현행 문제</strong>: 구식 레이아웃, 비통일된 상세페이지, 모바일 최적화 미흡, 브랜드 정체성 부재</li>
+                <li><strong>네비게이션</strong>: /sub01/sub01_01.html 등 정적 HTML 경로 구조</li>
+              </ul>
+
+              <h2>핵심 요구사항 분석</h2>
+              <ul>
+                <li><strong>UI/UX 디자인 전면 리뉴얼</strong> — 메인 페이지, 카테고리 페이지, 공통 컴포넌트(GNB, 푸터) 전체 재설계</li>
+                <li><strong>다채널 상세페이지 제작</strong> — 쿠팡, 네이버 스마트스토어 등 판매 채널에 최적화된 상세페이지 약 20종 디자인</li>
+                <li><strong>브랜드 아이덴티티 수립</strong> — 축산물 전문 쇼핑몰의 프리미엄 이미지에 맞는 컬러, 타이포그래피, 비주얼 시스템</li>
+                <li><strong>퍼블리싱 미포함</strong> — 순수 디자인 시안 납품 (Figma 원본 + 이미지 에셋)</li>
+                <li><strong>반응형 대응</strong> — PC/모바일 양방향 디자인 시안 제작</li>
+              </ul>
+
+              <h2>제안 포인트</h2>
+              <p>참고 사이트(gachunpork1.co.kr) 분석 결과, 현재 사이트는 Apache 기반 정적 HTML로 구성되어 있으며 28개 카테고리에 약 20종 상품이 등록되어 있습니다. 디자인 리뉴얼 시 다음과 같은 전략을 제안합니다:</p>
+              <ul>
+                <li><strong>마스터 템플릿 접근</strong> — 28개 카테고리를 3~4종 마스터 템플릿으로 그룹화하여 일관성과 효율성 확보</li>
+                <li><strong>상세페이지 모듈 시스템</strong> — 상품 특성(부위, 등급, 용도)에 맞는 모듈형 상세페이지 구조로 약 20종을 체계적으로 제작</li>
+                <li><strong>다채널 최적화</strong> — 쿠팡/스마트스토어 등 각 채널의 이미지 규격과 가이드라인에 맞춘 에셋 별도 제공</li>
+                <li><strong>유사 프로젝트 경험</strong> — P2P 펀딩 플랫폼 UI/UX 전면 리뉴얼, 50+ 페이지 규모 B2B SaaS 디자인, 6개 플랫폼 대응 멀티플랫폼 디자인 경험 보유</li>
+              </ul>
+
+              <h2>사용 도구</h2>
+              <h3>디자인 도구</h3>
+              <div class="flex flex-wrap gap-2 not-prose mb-4">
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Figma</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Photoshop</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Illustrator</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Figma Auto Layout</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Figma Components</span>
+              </div>
+              <h3>협업 및 커뮤니케이션</h3>
+              <div class="flex flex-wrap gap-2 not-prose">
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">Slack / 카카오톡</span>
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">Zoom / Google Meet</span>
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">Notion</span>
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">Figma 코멘트</span>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════ -->
+        <!-- PAGE: 견적서 (Estimate)                         -->
+        <!-- ═══════════════════════════════════════════════ -->
+        <div id="page-estimate" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>견적서</h1>
+              <blockquote>본 견적서는 프로젝트 요구사항 분석을 기반으로 산출되었습니다.</blockquote>
+
+              <h2>견적 요약</h2>
+              <table>
+                <tr><th>항목</th><th>내용</th></tr>
+                <tr><td>프로젝트명</td><td>축산물 쇼핑몰 UI/UX 디자인 리뉴얼 및 다채널 상세페이지 제작</td></tr>
+                <tr><td>제안 금액</td><td><strong>720만원 (VAT 별도)</strong></td></tr>
+                <tr><td>제안 기간</td><td>60일</td></tr>
+                <tr><td>견적 유효기간</td><td>제안일로부터 30일</td></tr>
+              </table>
+
+              <h2>상세 견적 내역</h2>
+              <table>
+                <thead>
+                  <tr><th>구분</th><th>항목</th><th>수량</th><th>단가</th><th>금액</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>기획</td><td>요구사항 분석 및 디자인 전략 수립</td><td>1식</td><td>-</td><td>80만원</td></tr>
+                  <tr><td>메인 디자인</td><td>메인 페이지 UI/UX 디자인 (PC/모바일)</td><td>1식</td><td>-</td><td>120만원</td></tr>
+                  <tr><td>서브 디자인</td><td>카테고리 페이지(28개) 마스터 템플릿 + 변형</td><td>1식</td><td>-</td><td>160만원</td></tr>
+                  <tr><td>상세페이지</td><td>약 20종 상품 상세페이지 + 다채널 최적화</td><td>1식</td><td>-</td><td>200만원</td></tr>
+                  <tr><td>공통 디자인</td><td>GNB, 푸터, 공통 컴포넌트, 회원/주문 페이지</td><td>1식</td><td>-</td><td>100만원</td></tr>
+                  <tr><td>디자인 시스템</td><td>스타일 가이드, 컴포넌트 라이브러리, 퍼블리싱 가이드</td><td>1식</td><td>-</td><td>60만원</td></tr>
+                </tbody>
+                <tfoot>
+                  <tr><th colspan="4">합계 (VAT 별도)</th><th>720만원</th></tr>
+                </tfoot>
+              </table>
+
+              <h2>산정 근거</h2>
+              <ul>
+                <li>28개 카테고리를 마스터 템플릿 3~4종으로 그룹화하여 효율적 제작</li>
+                <li>약 20종 상품 상세페이지는 모듈형 구조로 통일성 확보 + 상품별 개별 커스터마이징</li>
+                <li>다채널(쿠팡, 네이버 스마트스토어 등) 규격별 에셋 변환 작업 포함</li>
+                <li>유사 프로젝트(커머스 UI/UX 리뉴얼) 수행 경험 기반 효율적 진행</li>
+              </ul>
+
+              <h2>포함 사항</h2>
+              <ul>
+                <li>Figma 디자인 원본 파일 전체 이관</li>
+                <li>디자인 시스템 (컬러, 타이포그래피, 컴포넌트 라이브러리)</li>
+                <li>퍼블리싱 가이드 문서 (간격, 폰트, 컬러코드 명세)</li>
+                <li>다채널 상세페이지 이미지 에셋 (쿠팡/스마트스토어 규격)</li>
+                <li>PC/모바일 반응형 디자인 시안</li>
+                <li>1회 무상 수정 (시안 확정 후)</li>
+              </ul>
+
+              <h2>불포함 사항</h2>
+              <ul>
+                <li>HTML/CSS 퍼블리싱 (코딩 작업)</li>
+                <li>서버 이전 및 도메인 설정</li>
+                <li>상품 사진 촬영 및 리터칭</li>
+                <li>동영상 제작 및 모션 그래픽</li>
+                <li>쇼핑몰 솔루션(카페24, 고도몰 등) 세팅</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════ -->
+        <!-- PAGE: 공수계산서 (Man-day Calculation)           -->
+        <!-- ═══════════════════════════════════════════════ -->
+        <div id="page-manday" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>공수계산서</h1>
+              <blockquote>디자인 작업별 공수(Man-Day)를 산출하여 일정과 비용의 근거를 제시합니다.</blockquote>
+
+              <h2>공수 요약</h2>
+              <table>
+                <tr><th>구분</th><th>공수 (M/D)</th><th>비율</th></tr>
+                <tr><td>리서치 및 기획</td><td>5 M/D</td><td>10%</td></tr>
+                <tr><td>메인 페이지 디자인</td><td>7 M/D</td><td>14%</td></tr>
+                <tr><td>카테고리/서브 페이지 디자인</td><td>10 M/D</td><td>20%</td></tr>
+                <tr><td>상품 상세페이지 디자인</td><td>14 M/D</td><td>29%</td></tr>
+                <tr><td>공통 컴포넌트 및 회원/주문 페이지</td><td>6 M/D</td><td>12%</td></tr>
+                <tr><td>디자인 시스템 및 퍼블리싱 가이드</td><td>3 M/D</td><td>6%</td></tr>
+                <tr><td>클라이언트 리뷰 및 수정</td><td>4 M/D</td><td>8%</td></tr>
+                <tr><th>합계</th><th>49 M/D</th><th>100%</th></tr>
+              </table>
+
+              <h2>기능별 상세 공수</h2>
+              <table>
+                <thead>
+                  <tr><th>작업</th><th>세부 내용</th><th>담당</th><th>공수 (M/D)</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td rowspan="3">리서치 및 기획</td><td>현행 사이트 분석 및 벤치마킹</td><td>기획</td><td>2</td></tr>
+                  <tr><td>디자인 전략 수립 및 무드보드</td><td>기획</td><td>1.5</td></tr>
+                  <tr><td>와이어프레임 (주요 페이지)</td><td>기획</td><td>1.5</td></tr>
+                  <tr><td rowspan="3">메인 페이지 디자인</td><td>메인 히어로 및 GNB/푸터 디자인</td><td>디자인</td><td>3</td></tr>
+                  <tr><td>메인 섹션별 디자인 (카테고리, 베스트, 이벤트)</td><td>디자인</td><td>2.5</td></tr>
+                  <tr><td>모바일 반응형 디자인</td><td>디자인</td><td>1.5</td></tr>
+                  <tr><td rowspan="2">카테고리/서브 페이지</td><td>마스터 템플릿 3~4종 디자인 (PC/모바일)</td><td>디자인</td><td>6</td></tr>
+                  <tr><td>28개 카테고리 적용 및 변형</td><td>디자인</td><td>4</td></tr>
+                  <tr><td rowspan="3">상품 상세페이지</td><td>상세페이지 마스터 레이아웃 (부위/등급별)</td><td>디자인</td><td>4</td></tr>
+                  <tr><td>약 20종 상품별 상세페이지 제작</td><td>디자인</td><td>7</td></tr>
+                  <tr><td>다채널(쿠팡/스마트스토어) 규격 변환</td><td>디자인</td><td>3</td></tr>
+                  <tr><td rowspan="2">공통 컴포넌트</td><td>회원가입, 로그인, 마이페이지 디자인</td><td>디자인</td><td>3</td></tr>
+                  <tr><td>장바구니, 주문/결제, 주문완료 디자인</td><td>디자인</td><td>3</td></tr>
+                  <tr><td>디자인 시스템</td><td>스타일 가이드 + 컴포넌트 라이브러리 + 퍼블리싱 가이드</td><td>디자인</td><td>3</td></tr>
+                  <tr><td>리뷰 및 수정</td><td>클라이언트 피드백 반영 및 디자인 수정 (2회차)</td><td>디자인</td><td>4</td></tr>
+                </tbody>
+              </table>
+
+              <h2>산정 기준</h2>
+              <ul>
+                <li>1 M/D = 8시간 기준 (1인 1일 작업량)</li>
+                <li>주 5일 근무 기준</li>
+                <li>28개 카테고리를 마스터 템플릿 그룹화하여 효율화</li>
+                <li>유사 프로젝트(커머스 UI/UX 리뉴얼) 수행 경험 기반 산정</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════ -->
+        <!-- PAGE: PRD                                       -->
+        <!-- ═══════════════════════════════════════════════ -->
+        <div id="page-prd" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>PRD (디자인 요구사항 정의서)</h1>
+              <blockquote>디자인 요구사항을 정의하고 작업 범위를 명확히 합니다.</blockquote>
+
+              <h2>1. 프로젝트 배경 및 목적</h2>
+              <p>가천포크(gachunpork1.co.kr)는 한우, 한돈, 선물세트를 판매하는 축산물 전문 쇼핑몰입니다. 현재 사이트는 Apache 기반의 정적 HTML로 구성되어 있으며, 구식 레이아웃과 비통일된 상세페이지로 인해 프리미엄 축산물 브랜드에 걸맞은 사용자 경험을 제공하지 못하고 있습니다.</p>
+              <p>본 프로젝트의 목표는:</p>
+              <ul>
+                <li>프리미엄 축산물 브랜드에 어울리는 <strong>신뢰감 있는 쇼핑 경험</strong> 디자인</li>
+                <li>28개 카테고리와 약 20종 상품에 대한 <strong>체계적이고 통일된 UI/UX</strong> 수립</li>
+                <li>쿠팡, 네이버 스마트스토어 등 <strong>다채널 판매를 위한 상세페이지 에셋</strong> 제공</li>
+              </ul>
+
+              <h2>2. 사용자 정의</h2>
+              <table>
+                <thead>
+                  <tr><th>사용자 유형</th><th>설명</th><th>주요 접점</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>일반 고객 (PC)</td><td>검색/광고를 통해 유입되는 구매 희망 고객</td><td>메인, 카테고리, 상세페이지, 장바구니, 결제</td></tr>
+                  <tr><td>일반 고객 (모바일)</td><td>모바일 기기로 접속하는 고객 (비중 증가 추세)</td><td>동일 — 터치 최적화 필요</td></tr>
+                  <tr><td>다채널 고객</td><td>쿠팡, 네이버 스마트스토어에서 상품을 접하는 고객</td><td>상품 상세페이지 (이미지 중심)</td></tr>
+                  <tr><td>쇼핑몰 관리자</td><td>상품/주문/회원을 관리하는 내부 운영자</td><td>관리자 페이지 (디자인 범위 외)</td></tr>
+                </tbody>
+              </table>
+
+              <h2>3. 디자인 요구사항</h2>
+              <h3>3.1 메인 페이지 리뉴얼</h3>
+              <ul>
+                <li><strong>[필수]</strong> 히어로 영역 — 브랜드 이미지 + 주요 프로모션 배너</li>
+                <li><strong>[필수]</strong> GNB(Global Navigation Bar) — 한우/한돈/선물세트 카테고리 구조</li>
+                <li><strong>[필수]</strong> 베스트 상품, 신상품, 이벤트 섹션</li>
+                <li><strong>[필수]</strong> 푸터 — 사업자 정보, 고객센터, SNS 링크</li>
+                <li><strong>[선택]</strong> 브랜드 스토리 영역</li>
+              </ul>
+              <h3>3.2 카테고리 페이지 (28개)</h3>
+              <ul>
+                <li><strong>[필수]</strong> 한우 카테고리 (11개): 등심, 안심, 채끝, 갈비, 불고기, 국거리 등</li>
+                <li><strong>[필수]</strong> 한돈 카테고리 (10개): 삼겹살, 목살, 갈비, 앞다리, 뒷다리 등</li>
+                <li><strong>[필수]</strong> 선물세트 카테고리 (7개): 한우세트, 한돈세트, 혼합세트 등</li>
+                <li><strong>[필수]</strong> 마스터 템플릿 3~4종으로 그룹화하여 일관된 레이아웃</li>
+              </ul>
+              <h3>3.3 상품 상세페이지 (~20종)</h3>
+              <ul>
+                <li><strong>[필수]</strong> 상품 정보 영역 (이미지, 가격, 옵션, 구매 버튼)</li>
+                <li><strong>[필수]</strong> 상세 설명 영역 (부위 설명, 등급, 원산지, 보관법)</li>
+                <li><strong>[필수]</strong> 다채널 최적화 — 쿠팡(860px), 스마트스토어(860px) 규격 별도 제작</li>
+                <li><strong>[선택]</strong> 리뷰/후기 영역 디자인</li>
+              </ul>
+              <h3>3.4 공통/회원 페이지</h3>
+              <ul>
+                <li><strong>[필수]</strong> 회원가입, 로그인 페이지</li>
+                <li><strong>[필수]</strong> 마이페이지 (주문내역, 회원정보)</li>
+                <li><strong>[필수]</strong> 장바구니, 주문/결제, 주문완료 페이지</li>
+              </ul>
+
+              <h2>4. 비기능 요구사항</h2>
+              <table>
+                <thead>
+                  <tr><th>항목</th><th>요구사항</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>반응형</td><td>PC(1920px 기준), 모바일(375px 기준) 2 breakpoint 디자인</td></tr>
+                  <tr><td>접근성</td><td>WCAG 2.1 AA 기준 컬러 대비, 터치 영역 최소 44px</td></tr>
+                  <tr><td>브랜드 일관성</td><td>디자인 시스템(컬러, 타이포, 아이콘, 간격) 정의 및 문서화</td></tr>
+                  <tr><td>다채널 호환</td><td>쿠팡/스마트스토어 이미지 가이드라인 준수</td></tr>
+                  <tr><td>퍼블리싱 편의</td><td>Auto Layout 기반 Figma 구조, 네이밍 컨벤션, 에셋 export 설정</td></tr>
+                </tbody>
+              </table>
+
+              <h2>5. 기술 제약사항</h2>
+              <ul>
+                <li>현행 사이트가 정적 HTML 기반이므로, 디자인 시안은 <strong>쇼핑몰 솔루션(카페24, 고도몰 등) 또는 커스텀 퍼블리싱 모두에 대응 가능</strong>하도록 범용적으로 제작</li>
+                <li>상세페이지 이미지는 <strong>단일 이미지 포맷(JPG/PNG)</strong>으로 납품하여 어떤 플랫폼에도 업로드 가능</li>
+                <li>Figma 원본은 Auto Layout과 Component 기반으로 구성하여 퍼블리셔의 작업 효율 보장</li>
+              </ul>
+
+              <h2>6. 범위 외 사항 (Out of Scope)</h2>
+              <ul>
+                <li>HTML/CSS 퍼블리싱 및 개발 작업</li>
+                <li>쇼핑몰 솔루션 세팅 및 마이그레이션</li>
+                <li>서버 이전 및 도메인 설정</li>
+                <li>상품 사진 촬영 및 리터칭</li>
+                <li>관리자 페이지 디자인</li>
+                <li>결제/PG 시스템 관련 기능</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════ -->
+        <!-- PAGE: 일정 제안 (Timeline)                      -->
+        <!-- ═══════════════════════════════════════════════ -->
+        <div id="page-timeline" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>일정 제안</h1>
+              <blockquote>총 60일 기준 단계별 마일스톤 및 산출물을 제안합니다.</blockquote>
+
+              <h2>전체 일정 요약</h2>
+              <table>
+                <thead>
+                  <tr><th>단계</th><th>기간</th><th>주요 산출물</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Phase 1: 리서치 & 기획</td><td>Day 1–10</td><td>벤치마킹 보고서, 무드보드, 와이어프레임</td></tr>
+                  <tr><td>Phase 2: 메인 디자인</td><td>Day 11–24</td><td>메인 페이지, GNB/푸터, 디자인 시스템 초안</td></tr>
+                  <tr><td>Phase 3: 서브 페이지 디자인</td><td>Day 25–38</td><td>카테고리 마스터 템플릿, 회원/주문 페이지</td></tr>
+                  <tr><td>Phase 4: 상세페이지 제작</td><td>Day 39–52</td><td>~20종 상세페이지, 다채널 에셋</td></tr>
+                  <tr><td>Phase 5: 검수 및 납품</td><td>Day 53–60</td><td>디자인 시스템 완성, 퍼블리싱 가이드, 최종 납품</td></tr>
+                </tbody>
+              </table>
+            </article>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <h2 class="mb-4 text-sm font-semibold tracking-[0.14em] text-slate-500">상세 타임라인</h2>
+            <div class="timeline">
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 1</p>
+                <h4 class="text-base font-semibold text-slate-900">리서치 & 기획</h4>
+                <p class="mb-1 text-sm font-semibold text-amber-600">Day 1–10</p>
+                <p class="text-sm leading-7 text-slate-600">현행 사이트 심층 분석, 경쟁사 벤치마킹, 디자인 전략 수립, 무드보드 및 와이어프레임 제작</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: 벤치마킹 보고서, 무드보드, 와이어프레임 (주요 페이지)</li>
+                  <li>클라이언트 확인: 디자인 방향성 컨펌</li>
+                </ul>
+              </div>
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 2</p>
+                <h4 class="text-base font-semibold text-slate-900">메인 디자인</h4>
+                <p class="mb-1 text-sm font-semibold text-amber-600">Day 11–24</p>
+                <p class="text-sm leading-7 text-slate-600">메인 페이지 UI/UX 디자인(PC/모바일), GNB·푸터 공통 컴포넌트, 디자인 시스템 초안(컬러, 타이포, 아이콘)</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: 메인 페이지 시안 (PC/모바일), 디자인 시스템 초안</li>
+                  <li>클라이언트 확인: 메인 시안 컨펌 → 이후 단계 진행</li>
+                </ul>
+              </div>
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 3</p>
+                <h4 class="text-base font-semibold text-slate-900">서브 페이지 디자인</h4>
+                <p class="mb-1 text-sm font-semibold text-amber-600">Day 25–38</p>
+                <p class="text-sm leading-7 text-slate-600">카테고리 마스터 템플릿 3~4종 디자인 후 28개 카테고리 적용, 회원가입/로그인/마이페이지/장바구니/주문 페이지 디자인</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: 카테고리 마스터 템플릿, 28개 카테고리 페이지, 회원/주문 페이지</li>
+                  <li>병렬 진행: 메인 시안 컨펌 후 카테고리 + 공통 페이지 동시 진행</li>
+                </ul>
+              </div>
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 4</p>
+                <h4 class="text-base font-semibold text-slate-900">상세페이지 제작</h4>
+                <p class="mb-1 text-sm font-semibold text-amber-600">Day 39–52</p>
+                <p class="text-sm leading-7 text-slate-600">약 20종 상품별 상세페이지 디자인, 부위/등급/용도에 맞는 모듈 조합, 쿠팡/스마트스토어 규격 에셋 변환</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: ~20종 상품 상세페이지, 다채널 이미지 에셋</li>
+                  <li>효율화: 마스터 레이아웃 확정 후 상품별 빠른 적용</li>
+                </ul>
+              </div>
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 5</p>
+                <h4 class="text-base font-semibold text-slate-900">검수 및 납품</h4>
+                <p class="mb-1 text-sm font-semibold text-amber-600">Day 53–60</p>
+                <p class="text-sm leading-7 text-slate-600">클라이언트 최종 검수, 피드백 반영, 디자인 시스템 완성, 퍼블리싱 가이드 작성, Figma 파일 정리 및 최종 납품</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: 최종 Figma 파일, 디자인 시스템, 퍼블리싱 가이드, 이미지 에셋</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h2>마일스톤 체크포인트</h2>
+              <table>
+                <thead>
+                  <tr><th>마일스톤</th><th>시점</th><th>검수 기준</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>M1: 디자인 방향성 컨펌</td><td>Day 10</td><td>무드보드 및 와이어프레임 승인</td></tr>
+                  <tr><td>M2: 메인 시안 확정</td><td>Day 24</td><td>메인 페이지 PC/모바일 디자인 승인</td></tr>
+                  <tr><td>M3: 서브 페이지 완료</td><td>Day 38</td><td>카테고리 마스터 템플릿 + 회원/주문 페이지 승인</td></tr>
+                  <tr><td>M4: 상세페이지 완료</td><td>Day 52</td><td>~20종 상세페이지 + 다채널 에셋 승인</td></tr>
+                  <tr><td>M5: 최종 납품</td><td>Day 60</td><td>전체 Figma 파일, 디자인 시스템, 퍼블리싱 가이드 납품</td></tr>
+                </tbody>
+              </table>
+
+              <h2>커뮤니케이션 계획</h2>
+              <table>
+                <tr><th>항목</th><th>방식</th><th>주기</th></tr>
+                <tr><td>일일 진행 공유</td><td>Slack / 카카오톡</td><td>매일</td></tr>
+                <tr><td>주간 미팅</td><td>Zoom / Google Meet</td><td>주 1회</td></tr>
+                <tr><td>마일스톤 리뷰</td><td>Figma 코멘트 + 화면 공유</td><td>단계 완료 시</td></tr>
+                <tr><td>디자인 피드백</td><td>Figma 코멘트</td><td>상시</td></tr>
+              </table>
+            </article>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════ -->
+        <!-- PAGE: 포트폴리오 (Portfolio)                     -->
+        <!-- ═══════════════════════════════════════════════ -->
+        <div id="page-portfolio" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>유사 프로젝트 경험</h1>
+              <blockquote>본 프로젝트와 유사한 UI/UX 디자인 리뉴얼 및 대규모 디자인 수행 경험을 소개합니다.</blockquote>
+            </article>
+          </div>
+
+          <!-- Stats row -->
+          <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">28</p>
+              <p class="mt-1 text-xs text-slate-500">카테고리 페이지</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">~20종</p>
+              <p class="mt-1 text-xs text-slate-500">상품 상세페이지</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">60일</p>
+              <p class="mt-1 text-xs text-slate-500">작업 기간</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">49 M/D</p>
+              <p class="mt-1 text-xs text-slate-500">총 공수</p>
+            </div>
+          </div>
+
+          <!-- Portfolio cards -->
+          <div class="space-y-4">
+            <!-- P2P Funding -->
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft backdrop-blur md:p-8">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">핀테크 · UI/UX 리뉴얼</div>
+              <h3 class="text-lg font-semibold tracking-tight text-slate-900">P2P 크라우드 펀딩 플랫폼</h3>
+              <p class="mt-1 text-sm text-slate-400">핀테크 · 2019.12~2020.01 (2개월)</p>
+              <div class="mt-3 doc-content">
+                <h4>프로젝트 개요</h4>
+                <p>투자자·차입자·운영자를 연결하는 한국형 P2P 대출 자동화 플랫폼의 <strong>UI/UX 전면 리뉴얼</strong> 프로젝트입니다. 80+ 엔티티, 330+ API 패턴, 고객 포탈 + 관리자 패널의 대규모 서비스 디자인을 수행했습니다.</p>
+                <h4>핵심 기능</h4>
+                <ul>
+                  <li>투자 상품 마켓플레이스 — 실시간 펀딩 현황 UI</li>
+                  <li>4종 대출 멀티스텝 위저드 — 복잡한 신청 프로세스 UX 설계</li>
+                  <li>종합 관리자 대시보드 — 200+ API 관리자 패널</li>
+                </ul>
+                <h4>본 프로젝트와의 유사점</h4>
+                <p><strong>운영 중인 서비스의 UI/UX 전면 리뉴얼</strong> — 가천포크와 동일하게 기존 운영 중인 서비스의 디자인을 전면 개편한 프로젝트로, 기존 사용자 경험을 유지하면서 새로운 디자인 시스템을 적용하는 전략을 수립한 경험이 있습니다.</p>
+                <h4>기술 스택</h4>
+                <div class="flex flex-wrap gap-1.5 not-prose">
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Python</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Django</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">MySQL</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Figma</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- EZ-Approve -->
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft backdrop-blur md:p-8">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">B2B SaaS · 50+ 페이지</div>
+              <h3 class="text-lg font-semibold tracking-tight text-slate-900">EZ-Approve (전자결재 · 업무 관리 올인원 플랫폼)</h3>
+              <p class="mt-1 text-sm text-slate-400">B2B SaaS · 2026.01~2026.03 (9주)</p>
+              <div class="mt-3 doc-content">
+                <h4>프로젝트 개요</h4>
+                <p>한국 기업의 복잡한 결재·문서관리 프로세스를 디지털화하는 업무 자동화 SaaS 플랫폼입니다. <strong>50+ 페이지 규모</strong>의 대규모 UI 디자인과 디자인 시스템을 구축했으며, 2,764 파일, 504 PR을 9주 만에 완성했습니다.</p>
+                <h4>핵심 기능</h4>
+                <ul>
+                  <li>7종 사용자 역할별 대시보드 — 복잡한 권한 체계 반영 UI</li>
+                  <li>Lexical 기반 문서 편집기 — 170파일 규모의 커스텀 에디터 UI</li>
+                  <li>MUI v5 컴포넌트 시스템 — 체계적 디자인 시스템 구축</li>
+                </ul>
+                <h4>본 프로젝트와의 유사점</h4>
+                <p><strong>대규모 페이지 디자인 시스템 구축</strong> — 50+ 페이지를 일관된 디자인 시스템으로 관리한 경험으로, 가천포크의 28개 카테고리 페이지를 마스터 템플릿 기반으로 체계적으로 제작하는 데 직접적으로 활용할 수 있습니다.</p>
+                <h4>기술 스택</h4>
+                <div class="flex flex-wrap gap-1.5 not-prose">
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Next.js</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">MUI v5</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">NestJS</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Figma</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Harmony Link -->
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft backdrop-blur md:p-8">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">멀티플랫폼 · 6개 플랫폼</div>
+              <h3 class="text-lg font-semibold tracking-tight text-slate-900">하모니 링크 (노인 주간보호센터 통합 관리 플랫폼)</h3>
+              <p class="mt-1 text-sm text-slate-400">헬스케어 B2B SaaS · ~6개월</p>
+              <div class="mt-3 doc-content">
+                <h4>프로젝트 개요</h4>
+                <p>노인 주간보호센터의 돌봄 기록, 투약 관리, 보호자 소통, AI 건강분석을 통합한 멀티플랫폼 관리 시스템입니다. <strong>6개 플랫폼(Android, iOS, Web, macOS, Windows, Linux)</strong>에 대응하는 반응형·적응형 디자인을 설계했습니다.</p>
+                <h4>핵심 기능</h4>
+                <ul>
+                  <li>6개 플랫폼 대응 — 모바일/웹/데스크탑 각각 최적화된 UI</li>
+                  <li>2,532 다국어 키 — 체계적 디자인 토큰 시스템</li>
+                  <li>퍼블리셔 협업 가이드 — 디자인-개발 핸드오프 프로세스 수립</li>
+                </ul>
+                <h4>본 프로젝트와의 유사점</h4>
+                <p><strong>멀티플랫폼 대응 디자인 및 퍼블리싱 가이드</strong> — 가천포크의 다채널(PC, 모바일, 쿠팡, 스마트스토어) 대응과 동일한 맥락으로, 각 플랫폼/채널 규격에 맞춘 디자인 에셋 생성과 퍼블리싱 가이드 작성 경험이 있습니다.</p>
+                <h4>기술 스택</h4>
+                <div class="flex flex-wrap gap-1.5 not-prose">
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Flutter</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Next.js</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">NestJS</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Figma</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CTA -->
+          <div class="rounded-2xl border border-sky-200/70 bg-gradient-to-br from-sky-50 to-brand-50 p-6 text-center shadow-soft md:p-10">
+            <h2 class="text-xl font-bold tracking-tight text-slate-900 md:text-2xl">함께 만들어 가겠습니다</h2>
+            <p class="mx-auto mt-3 max-w-lg text-sm leading-7 text-slate-600">프로젝트에 대해 더 자세한 논의를 원하시면 미팅을 신청해 주세요.</p>
+            <a href="https://www.wishket.com/partners/p/blueverse1/portfolio/" target="_blank" rel="noopener noreferrer"
+               class="mt-5 inline-flex items-center gap-2 rounded-full border border-sky-300 bg-white px-5 py-2 text-sm font-semibold text-sky-700 shadow-sm transition hover:-translate-y-0.5 hover:border-sky-400 hover:shadow-soft">
+              위시켓에서 Blue Verse 보기 <span aria-hidden="true">&rarr;</span>
+            </a>
+          </div>
+        </div>
+
+      </main>
+    </div>
+
+    <footer class="mt-10 border-t border-slate-200 pt-6 text-xs text-slate-500">
+      &copy; 2026 Blue Verse &middot; 본 제안서는 축산물 쇼핑몰 UI/UX 디자인 리뉴얼 및 다채널 상세페이지 제작 프로젝트를 위해 작성되었습니다.
+    </footer>
+  </div>
+
+  <!-- ─── SPA Router ─── -->
+  <script>
+    const pages = ['home', 'overview', 'estimate', 'manday', 'prd', 'timeline', 'portfolio'];
+
+    function navigate(pageId) {
+      if (!pages.includes(pageId)) pageId = 'home';
+      // Hide all pages
+      document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
+      // Show target
+      const target = document.getElementById('page-' + pageId);
+      if (target) target.classList.add('active');
+      // Update nav
+      document.querySelectorAll('.nav-link').forEach(link => {
+        if (link.dataset.page === pageId) {
+          link.className = 'nav-link block rounded-xl border px-3 py-2 text-sm border-sky-200 bg-sky-50 font-medium text-sky-700';
+        } else {
+          link.className = 'nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900';
+        }
+      });
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // Close mobile sidebar
+      closeSidebar();
+    }
+
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebar-backdrop').classList.remove('open');
+    }
+
+    // Hash routing
+    function handleHash() {
+      const hash = (location.hash || '#home').replace('#', '');
+      navigate(hash);
+    }
+    window.addEventListener('hashchange', handleHash);
+    window.addEventListener('DOMContentLoaded', handleHash);
+
+    // Mobile sidebar toggle
+    document.getElementById('sidebar-toggle').addEventListener('click', function() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('sidebar-backdrop').classList.toggle('open');
+    });
+  </script>
+</body>
+</html>
