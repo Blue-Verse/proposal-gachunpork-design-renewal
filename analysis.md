@@ -101,7 +101,7 @@ job:
 ## 6. 최종 산출물 (8단계 출력 전문)
 
 ### 제안서 사이트 URL
-https://proposal-gachunpork-design-renewal.pages.dev/
+https://proposal-router.claude-ai-b27.workers.dev/proposal-gachunpork-design-renewal/
 
 ### 지원 금액
 7200000원
@@ -117,7 +117,7 @@ https://proposal-gachunpork-design-renewal.pages.dev/
 안녕하세요, 축산물 쇼핑몰 UI/UX 디자인 리뉴얼 및 다채널 상세페이지 제작 프로젝트에 지원합니다.
 
 본 프로젝트에 대한 상세 제안서(견적서, 공수계산서, PRD, 일정, 포트폴리오)를 별도 페이지로 준비하였습니다. 아래 링크에서 확인해 주시면 감사하겠습니다.
-▶ 제안서 상세 페이지: https://proposal-gachunpork-design-renewal.pages.dev/
+▶ 제안서 상세 페이지: https://proposal-router.claude-ai-b27.workers.dev/proposal-gachunpork-design-renewal/
 ▶ 위시켓 포트폴리오: https://www.wishket.com/partners/p/blueverse1/
 
 ---
